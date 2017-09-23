@@ -1,0 +1,27 @@
+{
+  "name": "router-challenge",
+  "version": "1.0.0",
+  "description": "Typescript solution for the router-challenge",
+  "main": "js-src/index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Giovarco/router-challenge.git"
+  },
+  "keywords": [
+    "router",
+    "challenge"
+  ],
+  "author": "Mario Mignemi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Giovarco/router-challenge/issues"
+  },
+  "homepage": "https://github.com/Giovarco/router-challenge#readme",
+  "dependencies": {
+    "mocha": "^3.5.3",
+    "supertest": "^3.0.0"
+  }
+}
