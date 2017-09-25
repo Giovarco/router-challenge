@@ -12,6 +12,15 @@ app.use('/hello', function (req, res, next) {
   next();
 });
 
+app.use('/hello', function (req, res, next) {
+  res.write('hello');
+  next();
+});
+
+app.logMapping();
+
+process.exit();
+
 app.use('/world', function (req, res, next) {
   res.write('world');
   next();

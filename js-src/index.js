@@ -1,8 +1,8 @@
 "use strict";
-exports.__esModule = true;
-var http = require("http");
-var winston = require("winston");
-var logger = new (winston.Logger)({
+Object.defineProperty(exports, "__esModule", { value: true });
+const http = require("http");
+const winston = require("winston");
+const logger = new (winston.Logger)({
     transports: [
         new (winston.transports.Console)({ colorize: true })
     ]
@@ -12,18 +12,18 @@ function createServer() {
     return new Server;
 }
 exports.createServer = createServer;
-var Server = (function () {
-    function Server() {
+class Server {
+    constructor() {
         this.mapping = {};
-        var server = http.createServer(function (req, res) {
+        const server = http.createServer(function (req, res) {
             res.writeHead(200);
             res.end('Hello, World!\n');
         });
     }
-    Server.prototype.use = function (a1, a2) {
-        var handler;
-        var endPoint;
-        if (typeof a2 === undefined) {
+    use(a1, a2) {
+        let handler;
+        let endPoint;
+        if (typeof a2 == "undefined") {
             endPoint = "/";
             handler = a1;
         }
@@ -35,12 +35,11 @@ var Server = (function () {
             this.mapping[endPoint] = [];
         }
         this.mapping[endPoint].push(handler);
-    };
-    Server.prototype.listen = function (port, callback) {
+    }
+    listen(port, callback) {
         this.server.listen(port, callback);
-    };
-    Server.prototype.logMapping = function () {
+    }
+    logMapping() {
         console.log(JSON.stringify(this.mapping, null, 2));
-    };
-    return Server;
-}());
+    }
+}

@@ -34,11 +34,12 @@ class Server implements IServer{
     public use(handler : IHandler) : void
     public use(a1 : string | IHandler, a2 ? : IHandler) : void {
 
+        // Local variables
         let handler : IHandler;
         let endPoint : string;
 
         // Type checking
-        if ( typeof a2 === undefined ) {
+        if ( typeof a2 == "undefined" ) {
             endPoint = "/"
             handler = a1 as IHandler;
         } else {
@@ -52,7 +53,7 @@ class Server implements IServer{
         }
 
         // Associate the end point with the handler
-        this.mapping[endPoint].push(handler as IHandler);
+        this.mapping[endPoint].push(handler);
 
     }
 
@@ -63,8 +64,6 @@ class Server implements IServer{
     public logMapping() {
         console.log( JSON.stringify(this.mapping, null, 2) );
     }
-
-    
 
 }
 
