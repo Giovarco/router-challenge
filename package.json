@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/Giovarco/router-challenge#readme",
   "dependencies": {
+    "@types/node": "^8.0.30",
     "@types/winston": "^2.3.6",
     "mocha": "^3.5.3",
     "supertest": "^3.0.0",

@@ -1,4 +1,6 @@
 // LIBRARIES
+import * as http from "http";
+
 import * as winston from 'winston';
 const logger = new (winston.Logger)({
   transports: [
@@ -14,13 +16,35 @@ export function createServer() : IServer {
 }
 
 // CLASSES
-class Server {
+class Server implements IServer{
 
     // Private variables
-    mapping : IMapping = {}
+    private mapping : IMapping = {}
+    private server : http.Server;
 
     // Public functions
-    public use(endPoint = "/*", handler : IHandler) : void {
+    constructor() {
+        const server = http.createServer(function (req, res) {
+            res.writeHead(200);
+            res.end('Hello, World!\n');
+        });
+    }
+
+    public use(endPoint  : string, handler : IHandler) : void
+    public use(handler : IHandler) : void
+    public use(a1 : string | IHandler, a2 ? : IHandler) : void {
+
+        let handler : IHandler;
+        let endPoint : string;
+
+        // Type checking
+        if ( typeof a2 === undefined ) {
+            endPoint = "/"
+            handler = a1 as IHandler;
+        } else {
+            endPoint = a1 as string;
+            handler = a2 as IHandler;
+        }
 
         // Check if the end point exists in the mapping. If not, create it
         if(this.mapping[endPoint] === undefined) {
@@ -28,13 +52,19 @@ class Server {
         }
 
         // Associate the end point with the handler
-        this.mapping[endPoint].push(handler);
+        this.mapping[endPoint].push(handler as IHandler);
 
+    }
+
+    public listen(port : number, callback : Function) {
+        this.server.listen(port, callback);
     }
 
     public logMapping() {
         console.log( JSON.stringify(this.mapping, null, 2) );
     }
+
+    
 
 }
 
@@ -44,10 +74,12 @@ interface IMapping
     [key : string] : IHandler[];
 }
 
-interface IHandler {
+export interface IHandler {
     (req : object, res : object, next : object) : void;
 }
 
 export interface IServer {
+    use(endPoint  : string, handler : IHandler) : void
+    use(handler : IHandler) : void
     logMapping() : void
 }
