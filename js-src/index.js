@@ -15,7 +15,7 @@ exports.createServer = createServer;
 class Server {
     constructor() {
         this.mapping = {};
-        const server = http.createServer(function (req, res) {
+        this.server = http.createServer(function (req, res) {
             res.writeHead(200);
             res.end('Hello, World!\n');
         });

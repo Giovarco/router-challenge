@@ -24,7 +24,7 @@ class Server implements IServer{
 
     // Public functions
     constructor() {
-        const server = http.createServer(function (req, res) {
+        this.server = http.createServer(function (req, res) {
             res.writeHead(200);
             res.end('Hello, World!\n');
         });
@@ -57,7 +57,7 @@ class Server implements IServer{
 
     }
 
-    public listen(port : number, callback : Function) {
+    public listen(port : number, callback : Function) : void {
         this.server.listen(port, callback);
     }
 
@@ -80,5 +80,6 @@ export interface IHandler {
 export interface IServer {
     use(endPoint  : string, handler : IHandler) : void
     use(handler : IHandler) : void
+    listen(port : number, callback : Function) : void
     logMapping() : void
 }

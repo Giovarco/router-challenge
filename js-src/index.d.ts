@@ -5,5 +5,6 @@ export interface IHandler {
 export interface IServer {
     use(endPoint: string, handler: IHandler): void;
     use(handler: IHandler): void;
+    listen(port: number, callback: Function): void;
     logMapping(): void;
 }
