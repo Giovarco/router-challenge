@@ -1,4 +1,7 @@
 export declare function createServer(): IServer;
+export interface IMapping {
+    [key: string]: IHandler[];
+}
 export interface IHandler {
     (req: object, res: object, next: object): void;
 }

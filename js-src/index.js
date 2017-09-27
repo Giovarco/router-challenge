@@ -1,8 +1,8 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const http = require("http");
-const winston = require("winston");
-const logger = new (winston.Logger)({
+exports.__esModule = true;
+var http = require("http");
+var winston = require("winston");
+var logger = new (winston.Logger)({
     transports: [
         new (winston.transports.Console)({ colorize: true })
     ]
@@ -12,17 +12,27 @@ function createServer() {
     return new Server;
 }
 exports.createServer = createServer;
-class Server {
-    constructor() {
+var Server = (function () {
+    function Server() {
+        var _this = this;
         this.mapping = {};
-        this.server = http.createServer(function (req, res) {
+        this.requestHandler = function (req, res) {
+            var targetEndPoint = req.url;
+            if (_this.mapping["/"] !== undefined) {
+                var functionList = _this.mapping["/"];
+                for (var i = 0; i < functionList.length; i++) {
+                    var currentMiddleware = functionList[i];
+                    currentMiddleware(req, res, next);
+                }
+            }
             res.writeHead(200);
-            res.end('Hello, World!\n');
-        });
+            res.end("HELLO");
+        };
+        this.server = http.createServer(this.requestHandler);
     }
-    use(a1, a2) {
-        let handler;
-        let endPoint;
+    Server.prototype.use = function (a1, a2) {
+        var endPoint;
+        var handler;
         if (typeof a2 == "undefined") {
             endPoint = "/";
             handler = a1;
@@ -35,11 +45,12 @@ class Server {
             this.mapping[endPoint] = [];
         }
         this.mapping[endPoint].push(handler);
-    }
-    listen(port, callback) {
+    };
+    Server.prototype.listen = function (port, callback) {
         this.server.listen(port, callback);
-    }
-    logMapping() {
+    };
+    Server.prototype.logMapping = function () {
         console.log(JSON.stringify(this.mapping, null, 2));
-    }
-}
+    };
+    return Server;
+}());

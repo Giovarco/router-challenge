@@ -16,18 +16,44 @@ export function createServer() : IServer {
 }
 
 // CLASSES
-class Server implements IServer{
+class Server implements IServer {
 
     // Private variables
-    private mapping : IMapping = {}
+    private mapping : IMapping = {};
     private server : http.Server;
+    private requestHandler = (req : http.IncomingMessage, res : http.ServerResponse) => {
+        
+        const targetEndPoint : string = req.url as string;
+
+        // Execute / middlewares
+        if(this.mapping["/"] !== undefined) {
+
+            let functionList : IHandler[] = this.mapping["/"];
+
+            for(let i = 0; i < functionList.length; i++) {
+                let currentMiddleware : IHandler = functionList[i];
+                currentMiddleware(req, res, next);
+            }
+
+        }
+        
+
+        // Execute the specific middlewares
+
+        /*
+        for(let currentEndPoint in this.mapping) {
+            logger.debug(currentEndPoint);
+        }
+        */
+
+        res.writeHead(200);
+        res.end("HELLO");
+
+    };
 
     // Public functions
     constructor() {
-        this.server = http.createServer(function (req, res) {
-            res.writeHead(200);
-            res.end('Hello, World!\n');
-        });
+        this.server = http.createServer(this.requestHandler);
     }
 
     public use(endPoint  : string, handler : IHandler) : void
@@ -35,8 +61,8 @@ class Server implements IServer{
     public use(a1 : string | IHandler, a2 ? : IHandler) : void {
 
         // Local variables
-        let handler : IHandler;
         let endPoint : string;
+        let handler : IHandler;
 
         // Type checking
         if ( typeof a2 == "undefined" ) {
@@ -67,8 +93,23 @@ class Server implements IServer{
 
 }
 
+/*class Response {
+
+    // Private variables
+    private response : http.ServerResponse;
+
+    // Public functions
+    constructor(response : http.ServerResponse) {
+        this.response = response;
+    }
+
+    public write(s : string) : void {
+        this.response.write
+    }
+}*/
+
 // INTERFACES
-interface IMapping
+export interface IMapping
 {
     [key : string] : IHandler[];
 }
