@@ -1,15 +1,6 @@
 // LIBRARIES
 import * as http from "http";
 
-import * as winston from 'winston';
-const logger = new (winston.Logger)({
-  transports: [
-    // colorize the output to the console
-    new (winston.transports.Console)({ colorize: true })
-  ]
-});
-logger.level = 'debug';
-
 // EXPOSED FUNCTIONS
 export function createServer() : IServer {
     return new Server;
@@ -68,10 +59,6 @@ class Server implements IServer {
 
     public listen(port : number, callback : Function) : void {
         this.server.listen(port, callback);
-    }
-
-    public logMapping() {
-        console.log( JSON.stringify(this.mapping, null, 2) );
     }
 
     // Private functions
@@ -134,5 +121,4 @@ export interface IServer {
     use(endPoint  : string, handler : IHandler) : void
     use(handler : IHandler) : void
     listen(port : number, callback : Function) : void
-    logMapping() : void
 }

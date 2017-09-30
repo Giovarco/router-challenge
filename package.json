@@ -1,7 +1,7 @@
 {
   "name": "router-challenge",
   "version": "1.0.0",
-  "description": "Typescript solution for the router-challenge",
+  "description": "Typescript solution for the router-challenge (https://github.com/weflex/router-challenge)",
   "main": "js-src/index.js",
   "scripts": {
     "test": "mocha test"
@@ -22,9 +22,11 @@
   "homepage": "https://github.com/Giovarco/router-challenge#readme",
   "dependencies": {
     "@types/node": "^8.0.30",
-    "@types/winston": "^2.3.6",
     "mocha": "^3.5.3",
-    "supertest": "^3.0.0",
+    "supertest": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/winston": "^2.3.6",
     "winston": "^2.3.1"
   }
 }

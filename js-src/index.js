@@ -36,13 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var http = require("http");
-var winston = require("winston");
-var logger = new (winston.Logger)({
-    transports: [
-        new (winston.transports.Console)({ colorize: true })
-    ]
-});
-logger.level = 'debug';
 function createServer() {
     return new Server;
 }
@@ -88,9 +81,6 @@ var Server = (function () {
     };
     Server.prototype.listen = function (port, callback) {
         this.server.listen(port, callback);
-    };
-    Server.prototype.logMapping = function () {
-        console.log(JSON.stringify(this.mapping, null, 2));
     };
     Server.prototype.handleEndPoint = function (endPoint, req, res) {
         var middlewareList = this.mapping;
