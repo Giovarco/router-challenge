@@ -21,61 +21,24 @@ class Server implements IServer {
     // Private variables
     private mapping : IMapping = {};
     private server : http.Server;
-    private requestHandler = (req : http.IncomingMessage, res : http.ServerResponse) => {
+    private  requestHandler = async (req : http.IncomingMessage, res : http.ServerResponse) => {
         
+        // Get the target end point
         const targetEndPoint : string = req.url as string;
         logger.debug("targetEndPoint="+targetEndPoint);
 
-        res.writeHead(200);
-        // Execute / middlewares
-        if(this.mapping["/"] !== undefined) {
+        // Write status code
+        await res.writeHead(200);
 
-            let functionList : IHandler[] = this.mapping["/"];
-
-            let i : number = 0;
-            let max_i : number = functionList.length;
-
-            let next = () => {
-                i++;
-                let nextFunction : IHandler;
-                if(i >= max_i) {
-                    nextFunction = function() { return; };                    
-                } else {
-                    nextFunction = functionList[i];                    
-                }
-
-                nextFunction(req, res, next);
-                
+        // Execute specific middlewares
+        for(let currentEndPoint in this.mapping) {
+            if( currentEndPoint === targetEndPoint && currentEndPoint !== "/") {
+                await this.handleEndPoint(currentEndPoint, req, res);
             }
-
-            functionList[i](req, res, next);
-
-            /*for(let i = 0; i < functionList.length; i++) {
-
-                logger.debug("i="+i)
-                let currentMiddleware : IHandler = functionList[i];
-                
-                let next : Function;
-                if(i<functionList.length-1) {
-                    logger.debug("1")
-                    next = functionList[i+1];
-                } else {
-                    logger.debug("2")
-                    next = function() { 
-                        console.log("empty function")
-                    };
-                }
-                
-                logger.debug("req="+req);
-                logger.debug("res="+res);
-                logger.debug("next="+next)
-                currentMiddleware(req, res, next);
-                logger.debug("");
-            }*/
-
         }
-        
-        // Execute the specific middlewares
+
+        // Execute / middlewares
+        await this.handleEndPoint("/", req, res);
 
     };
 
@@ -119,6 +82,33 @@ class Server implements IServer {
         console.log( JSON.stringify(this.mapping, null, 2) );
     }
 
+    // Private functions
+    private handleEndPoint(endPoint : string, req : http.IncomingMessage, res : http.ServerResponse) : void {
+        
+        if(this.mapping[endPoint] !== undefined) {
+
+            let functionList : IHandler[] = this.mapping[endPoint];
+
+            let i : number = 0;
+            let max_i : number = functionList.length;
+
+            let next = () => {
+                i++;
+                let nextFunction : IHandler;
+                if(i >= max_i) {
+                    nextFunction = function() { return; };                    
+                } else {
+                    nextFunction = functionList[i];                    
+                }
+
+                nextFunction(req, res, next);
+            }
+
+            functionList[i](req, res, next);
+
+        }
+
+    }
 }
 
 /*class Response {
