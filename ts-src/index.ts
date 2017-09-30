@@ -47,7 +47,7 @@ class Server implements IServer {
         let endPoint : string;
         let handler : IHandler;
 
-        // Type checking
+        // Check which signature was used by type checking
         if ( typeof a2 == "undefined" ) {
             endPoint = "/"
             handler = a1 as IHandler;
@@ -88,10 +88,9 @@ class Server implements IServer {
             let max_i : number = middlewareList.length;
     
             // Declare next function
-            let next = () => {
+            const next = () => {
                 
-                logger.debug("endPoint="+endPoint);
-
+                // Find the next function to execute
                 let noMatch : boolean = true;
                 do {
                     i++;

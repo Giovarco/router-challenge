@@ -98,7 +98,6 @@ var Server = (function () {
             var i_1 = -1;
             var max_i = middlewareList.length;
             var next_1 = function () {
-                logger.debug("endPoint=" + endPoint);
                 var noMatch = true;
                 do {
                     i_1++;
