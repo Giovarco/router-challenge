@@ -18,15 +18,25 @@ var Server = (function () {
         this.mapping = {};
         this.requestHandler = function (req, res) {
             var targetEndPoint = req.url;
-            if (_this.mapping["/"] !== undefined) {
-                var functionList = _this.mapping["/"];
-                for (var i = 0; i < functionList.length; i++) {
-                    var currentMiddleware = functionList[i];
-                    currentMiddleware(req, res, next);
-                }
-            }
+            logger.debug("targetEndPoint=" + targetEndPoint);
             res.writeHead(200);
-            res.end("HELLO");
+            if (_this.mapping["/"] !== undefined) {
+                var functionList_1 = _this.mapping["/"];
+                var i_1 = 0;
+                var max_i_1 = functionList_1.length;
+                var next_1 = function () {
+                    i_1++;
+                    var nextFunction;
+                    if (i_1 >= max_i_1) {
+                        nextFunction = function () { return; };
+                    }
+                    else {
+                        nextFunction = functionList_1[i_1];
+                    }
+                    nextFunction(req, res, next_1);
+                };
+                functionList_1[i_1](req, res, next_1);
+            }
         };
         this.server = http.createServer(this.requestHandler);
     }

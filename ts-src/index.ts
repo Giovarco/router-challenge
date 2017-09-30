@@ -24,30 +24,58 @@ class Server implements IServer {
     private requestHandler = (req : http.IncomingMessage, res : http.ServerResponse) => {
         
         const targetEndPoint : string = req.url as string;
+        logger.debug("targetEndPoint="+targetEndPoint);
 
+        res.writeHead(200);
         // Execute / middlewares
         if(this.mapping["/"] !== undefined) {
 
             let functionList : IHandler[] = this.mapping["/"];
 
-            for(let i = 0; i < functionList.length; i++) {
-                let currentMiddleware : IHandler = functionList[i];
-                currentMiddleware(req, res, next);
+            let i : number = 0;
+            let max_i : number = functionList.length;
+
+            let next = () => {
+                i++;
+                let nextFunction : IHandler;
+                if(i >= max_i) {
+                    nextFunction = function() { return; };                    
+                } else {
+                    nextFunction = functionList[i];                    
+                }
+
+                nextFunction(req, res, next);
+                
             }
+
+            functionList[i](req, res, next);
+
+            /*for(let i = 0; i < functionList.length; i++) {
+
+                logger.debug("i="+i)
+                let currentMiddleware : IHandler = functionList[i];
+                
+                let next : Function;
+                if(i<functionList.length-1) {
+                    logger.debug("1")
+                    next = functionList[i+1];
+                } else {
+                    logger.debug("2")
+                    next = function() { 
+                        console.log("empty function")
+                    };
+                }
+                
+                logger.debug("req="+req);
+                logger.debug("res="+res);
+                logger.debug("next="+next)
+                currentMiddleware(req, res, next);
+                logger.debug("");
+            }*/
 
         }
         
-
         // Execute the specific middlewares
-
-        /*
-        for(let currentEndPoint in this.mapping) {
-            logger.debug(currentEndPoint);
-        }
-        */
-
-        res.writeHead(200);
-        res.end("HELLO");
 
     };
 
@@ -115,7 +143,7 @@ export interface IMapping
 }
 
 export interface IHandler {
-    (req : object, res : object, next : object) : void;
+    (req : http.IncomingMessage, res : http.ServerResponse, next : Function) : void;
 }
 
 export interface IServer {
