@@ -1,7 +1,7 @@
 {
   "name": "router-challenge",
   "version": "1.0.0",
-  "description": "Typescript solution for the router-challenge (https://github.com/weflex/router-challenge)",
+  "description": "Typescript solution for the router-challenge",
   "main": "js-src/index.js",
   "scripts": {
     "test": "mocha test"
