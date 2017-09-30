@@ -61,26 +61,26 @@ var Server = (function () {
                         return [4, res.writeHead(200)];
                     case 1:
                         _c.sent();
+                        return [4, this.handleEndPoint("/", req, res)];
+                    case 2:
+                        _c.sent();
                         _a = [];
                         for (_b in this.mapping)
                             _a.push(_b);
                         _i = 0;
-                        _c.label = 2;
-                    case 2:
-                        if (!(_i < _a.length)) return [3, 5];
-                        currentEndPoint = _a[_i];
-                        if (!(currentEndPoint === targetEndPoint && currentEndPoint !== "/")) return [3, 4];
-                        return [4, this.handleEndPoint(currentEndPoint, req, res)];
+                        _c.label = 3;
                     case 3:
-                        _c.sent();
-                        _c.label = 4;
+                        if (!(_i < _a.length)) return [3, 6];
+                        currentEndPoint = _a[_i];
+                        if (!(currentEndPoint === targetEndPoint && currentEndPoint !== "/")) return [3, 5];
+                        return [4, this.handleEndPoint(currentEndPoint, req, res)];
                     case 4:
-                        _i++;
-                        return [3, 2];
-                    case 5: return [4, this.handleEndPoint("/", req, res)];
-                    case 6:
                         _c.sent();
-                        return [2];
+                        _c.label = 5;
+                    case 5:
+                        _i++;
+                        return [3, 3];
+                    case 6: return [2];
                 }
             });
         }); };

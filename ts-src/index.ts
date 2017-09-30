@@ -30,15 +30,15 @@ class Server implements IServer {
         // Write status code
         await res.writeHead(200);
 
+        // Execute / middlewares
+        await this.handleEndPoint("/", req, res);
+
         // Execute specific middlewares
         for(let currentEndPoint in this.mapping) {
             if( currentEndPoint === targetEndPoint && currentEndPoint !== "/") {
                 await this.handleEndPoint(currentEndPoint, req, res);
             }
         }
-
-        // Execute / middlewares
-        await this.handleEndPoint("/", req, res);
 
     };
 
