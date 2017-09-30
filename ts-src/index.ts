@@ -25,7 +25,6 @@ class Server implements IServer {
         
         // Get the target end point
         const targetEndPoint : string = req.url as string;
-        // logger.debug("targetEndPoint="+targetEndPoint);
 
         // Write status code
         await res.writeHead(200);
@@ -57,7 +56,7 @@ class Server implements IServer {
             handler = a2 as IHandler;
         }
 
-        // Check if the end point exists in the mapping. If not, create it
+        // Push a new middleware to mapping
         const middleware : IMiddleware = {
             "endPoint" : endPoint,
             "handler" : handler
@@ -78,13 +77,17 @@ class Server implements IServer {
     // Private functions
     private handleEndPoint(endPoint : string, req : http.IncomingMessage, res : http.ServerResponse) : void {
         
+        // Get the middleware list
         const middlewareList : IMiddleware[] = this.mapping;
 
+        // Check if there is at least one middleware
         if(middlewareList.length > 0) {
 
-            let i : number = -1;
+            // Declare indexes
+            let i : number = -1; // Default value that gets i++ immediatly by next()
             let max_i : number = middlewareList.length;
     
+            // Declare next function
             let next = () => {
                 
                 logger.debug("endPoint="+endPoint);
@@ -104,12 +107,13 @@ class Server implements IServer {
 
                 } while(noMatch);
                 
-                
+                // Execute the next useful function
                 const nextFunction : IHandler = middlewareList[i].handler;                    
                 nextFunction(req, res, next);
 
             }
     
+            // Start executing the chain
             next();
 
         }
