@@ -19,7 +19,6 @@ app.use('/world', function (req, res, next) {
 
 app.use('/', function (req, res, next) {
   res.end();
-  console.log('END');
 });
 
 app.listen(3000);
