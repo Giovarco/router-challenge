@@ -1,8 +1,9 @@
 /// <reference types="node" />
 import * as http from "http";
 export declare function createServer(): IServer;
-export interface IMapping {
-    [key: string]: IHandler[];
+export interface IMiddleware {
+    endPoint: string;
+    handler: IHandler;
 }
 export interface IHandler {
     (req: http.IncomingMessage, res: http.ServerResponse, next: Function): void;

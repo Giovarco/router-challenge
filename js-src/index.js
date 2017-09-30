@@ -50,37 +50,20 @@ exports.createServer = createServer;
 var Server = (function () {
     function Server() {
         var _this = this;
-        this.mapping = {};
+        this.mapping = [];
         this.requestHandler = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-            var targetEndPoint, _a, _b, _i, currentEndPoint;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var targetEndPoint;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
                         targetEndPoint = req.url;
-                        logger.debug("targetEndPoint=" + targetEndPoint);
                         return [4, res.writeHead(200)];
                     case 1:
-                        _c.sent();
-                        return [4, this.handleEndPoint("/", req, res)];
+                        _a.sent();
+                        return [4, this.handleEndPoint(targetEndPoint, req, res)];
                     case 2:
-                        _c.sent();
-                        _a = [];
-                        for (_b in this.mapping)
-                            _a.push(_b);
-                        _i = 0;
-                        _c.label = 3;
-                    case 3:
-                        if (!(_i < _a.length)) return [3, 6];
-                        currentEndPoint = _a[_i];
-                        if (!(currentEndPoint === targetEndPoint && currentEndPoint !== "/")) return [3, 5];
-                        return [4, this.handleEndPoint(currentEndPoint, req, res)];
-                    case 4:
-                        _c.sent();
-                        _c.label = 5;
-                    case 5:
-                        _i++;
-                        return [3, 3];
-                    case 6: return [2];
+                        _a.sent();
+                        return [2];
                 }
             });
         }); };
@@ -97,10 +80,11 @@ var Server = (function () {
             endPoint = a1;
             handler = a2;
         }
-        if (this.mapping[endPoint] === undefined) {
-            this.mapping[endPoint] = [];
-        }
-        this.mapping[endPoint].push(handler);
+        var middleware = {
+            "endPoint": endPoint,
+            "handler": handler
+        };
+        this.mapping.push(middleware);
     };
     Server.prototype.listen = function (port, callback) {
         this.server.listen(port, callback);
@@ -109,22 +93,27 @@ var Server = (function () {
         console.log(JSON.stringify(this.mapping, null, 2));
     };
     Server.prototype.handleEndPoint = function (endPoint, req, res) {
-        if (this.mapping[endPoint] !== undefined) {
-            var functionList_1 = this.mapping[endPoint];
-            var i_1 = 0;
-            var max_i_1 = functionList_1.length;
+        var middlewareList = this.mapping;
+        if (middlewareList.length > 0) {
+            var i_1 = -1;
+            var max_i = middlewareList.length;
             var next_1 = function () {
-                i_1++;
-                var nextFunction;
-                if (i_1 >= max_i_1) {
-                    nextFunction = function () { return; };
-                }
-                else {
-                    nextFunction = functionList_1[i_1];
-                }
+                logger.debug("endPoint=" + endPoint);
+                var noMatch = true;
+                do {
+                    i_1++;
+                    if (middlewareList[i_1] === undefined) {
+                        return;
+                    }
+                    if (middlewareList[i_1].endPoint === "/" ||
+                        middlewareList[i_1].endPoint === endPoint) {
+                        noMatch = false;
+                    }
+                } while (noMatch);
+                var nextFunction = middlewareList[i_1].handler;
                 nextFunction(req, res, next_1);
             };
-            functionList_1[i_1](req, res, next_1);
+            next_1();
         }
     };
     return Server;

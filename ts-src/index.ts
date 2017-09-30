@@ -19,26 +19,19 @@ export function createServer() : IServer {
 class Server implements IServer {
 
     // Private variables
-    private mapping : IMapping = {};
+    private mapping : Array<IMiddleware> = [];
     private server : http.Server;
     private  requestHandler = async (req : http.IncomingMessage, res : http.ServerResponse) => {
         
         // Get the target end point
         const targetEndPoint : string = req.url as string;
-        logger.debug("targetEndPoint="+targetEndPoint);
+        // logger.debug("targetEndPoint="+targetEndPoint);
 
         // Write status code
         await res.writeHead(200);
 
-        // Execute / middlewares
-        await this.handleEndPoint("/", req, res);
-
-        // Execute specific middlewares
-        for(let currentEndPoint in this.mapping) {
-            if( currentEndPoint === targetEndPoint && currentEndPoint !== "/") {
-                await this.handleEndPoint(currentEndPoint, req, res);
-            }
-        }
+        // Handle request
+        await this.handleEndPoint(targetEndPoint, req, res);
 
     };
 
@@ -65,12 +58,12 @@ class Server implements IServer {
         }
 
         // Check if the end point exists in the mapping. If not, create it
-        if(this.mapping[endPoint] === undefined) {
-            this.mapping[endPoint] = [];
-        }
+        const middleware : IMiddleware = {
+            "endPoint" : endPoint,
+            "handler" : handler
+        };
 
-        // Associate the end point with the handler
-        this.mapping[endPoint].push(handler);
+        this.mapping.push(middleware);
 
     }
 
@@ -85,51 +78,49 @@ class Server implements IServer {
     // Private functions
     private handleEndPoint(endPoint : string, req : http.IncomingMessage, res : http.ServerResponse) : void {
         
-        if(this.mapping[endPoint] !== undefined) {
+        const middlewareList : IMiddleware[] = this.mapping;
 
-            let functionList : IHandler[] = this.mapping[endPoint];
+        if(middlewareList.length > 0) {
 
-            let i : number = 0;
-            let max_i : number = functionList.length;
-
+            let i : number = -1;
+            let max_i : number = middlewareList.length;
+    
             let next = () => {
-                i++;
-                let nextFunction : IHandler;
-                if(i >= max_i) {
-                    nextFunction = function() { return; };                    
-                } else {
-                    nextFunction = functionList[i];                    
-                }
+                
+                logger.debug("endPoint="+endPoint);
 
+                let noMatch : boolean = true;
+                do {
+                    i++;
+
+                    if(middlewareList[i] === undefined) {
+                        return;
+                    }
+
+                    if( middlewareList[i].endPoint === "/" ||
+                        middlewareList[i].endPoint === endPoint) {
+                            noMatch = false;
+                    }
+
+                } while(noMatch);
+                
+                
+                const nextFunction : IHandler = middlewareList[i].handler;                    
                 nextFunction(req, res, next);
-            }
 
-            functionList[i](req, res, next);
+            }
+    
+            next();
 
         }
 
     }
 }
 
-/*class Response {
-
-    // Private variables
-    private response : http.ServerResponse;
-
-    // Public functions
-    constructor(response : http.ServerResponse) {
-        this.response = response;
-    }
-
-    public write(s : string) : void {
-        this.response.write
-    }
-}*/
-
 // INTERFACES
-export interface IMapping
-{
-    [key : string] : IHandler[];
+export interface IMiddleware {
+    endPoint : string,
+    handler : IHandler
 }
 
 export interface IHandler {
